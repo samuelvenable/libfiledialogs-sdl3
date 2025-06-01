@@ -294,8 +294,10 @@ namespace {
     if (window == nullptr) return "";
     SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
     dialog = window;
-    if (ngs::fs::environment_get_variable("IMGUI_DIALOG_FULLSCREEN") == std::to_string(1))
-    SDL_SetWindowFullscreenMode(window, nullptr);
+    if (ngs::fs::environment_get_variable("IMGUI_DIALOG_FULLSCREEN") == std::to_string(1)) {
+      SDL_SetWindowFullscreenMode(window, nullptr);
+      SDL_SetWindowFullscreen(window, true);
+    }
     renderer = SDL_CreateRenderer(window, nullptr);
     //printf("Current Renderer: %s\n", SDL_GetRendererName(renderer));
     if (renderer == nullptr) return "";
