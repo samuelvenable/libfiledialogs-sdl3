@@ -19,6 +19,6 @@ elif [ $(uname) = "OpenBSD" ]; then
   "./filedialogs/build.sh";
 elif [ $(uname) = "SunOS" ]; then
   "./filedialogs/build.sh";
-else
+else # Windows
   "./filedialogs/build.sh";
 fi
