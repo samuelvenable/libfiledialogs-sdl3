@@ -20,5 +20,5 @@ elif [ $(uname) = "OpenBSD" ]; then
 elif [ $(uname) = "SunOS" ]; then
   "./filedialogs/build.sh";
 else
-  echo "build the visual studio solution found in the \"filedialogs\" sub-directory of this repository's source tree.";
+  "./filedialogs/build.sh";
 fi
