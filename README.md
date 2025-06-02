@@ -4,7 +4,7 @@ Contact me on [Discord](https://discord.com) if you have any comments, questions
 
 ```
 /*
-** Alternative main.cpp - replace libfiledialogs-sdl3/filedialogs/main.cpp with this exact code
+** Alternative main.cpp - replace SDL3-ImGui-FileDialogs/filedialogs/main.cpp with this exact code
 */
 
 #include <iostream> // std::cout, std::endl
