@@ -106,8 +106,8 @@ int main() {
 
 Supports Windows, macOS, Linux, FreeBSD, DragonFly BSD, NetBSD, OpenBSD, and SunOS. 
 
-![win32.png](https://github.com/samuelvenable/libfiledialogs-sdl3/blob/main/win32.png?raw=true)
+![win32.png](win32.png)
 
-![macos.png](https://github.com/samuelvenable/libfiledialogs-sdl3/blob/main/macos.png?raw=true)
+![macos.png](macos.png)
 
-![linux.png](https://github.com/samuelvenable/libfiledialogs-sdl3/blob/main/linux.png?raw=true)
+![linux.png](linux.png)
