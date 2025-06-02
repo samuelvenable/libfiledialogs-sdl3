@@ -4,9 +4,7 @@ Contact me on [Discord](https://discord.com) if you have any comments, questions
 
 ```
 /*
-** Alternative main.cpp - replace libfiledialogs/libfiledialogs/main.cpp with this exact code
-** then if on Windows open the solution in Visual Studio and build with that otherwise run
-** the build.sh script if you are building with g++ or clang++, depending on the target OS
+** Alternative main.cpp - replace libfiledialogs-sdl3/filedialogs/main.cpp with this exact code
 */
 
 #include <iostream> // std::cout, std::endl
