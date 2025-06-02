@@ -34,7 +34,7 @@ environment variable */
 #endif
 #endif
 
-// for SDL2
+// for SDL3
 #if defined(_WIN32)
 #undef main
 #endif
