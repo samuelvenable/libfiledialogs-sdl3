@@ -276,8 +276,8 @@ namespace {
   SDL_Surface *surf = nullptr;
   ImFontAtlas *shared_font_atlas = nullptr;
 
-  string file_dialog_helper(string filter, string fname, string dir, string title, int type, string message = "", string def = "") {
-    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d,metal,vulkan,opengl,software");
+  string file_dialog_helper(string filter, string fname, string dir, string title, int type, string message = "", string def = "") {   
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d,direct3d11,direct3d12,metal,vulkan,opengl,opengles2,opengles,gpu,software");
     #if defined(SDL_VIDEO_DRIVER_X11)
     ngs::fs::environment_set_variable("SDL_VIDEODRIVER", "x11");
     #endif
@@ -299,7 +299,6 @@ namespace {
       SDL_SetWindowFullscreen(window, true);
     }
     renderer = SDL_CreateRenderer(window, nullptr);
-    //printf("Current Renderer: %s\n", SDL_GetRendererName(renderer));
     if (renderer == nullptr) return "";
     IMGUI_CHECKVERSION();
     if (!shared_font_atlas)
