@@ -284,7 +284,6 @@ namespace {
     SDL_Window *window = nullptr;
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD);
     SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
-    //SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
     SDL_WindowFlags windowFlags = (SDL_WindowFlags)(
     ((ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) ? SDL_WINDOW_ALWAYS_ON_TOP : 0) |
     SDL_WINDOW_UTILITY | SDL_WINDOW_HIDDEN | ((ngs::fs::environment_get_variable("IMGUI_DIALOG_RESIZE") ==
@@ -300,6 +299,10 @@ namespace {
     }
     renderer = SDL_CreateRenderer(window, nullptr);
     if (renderer == nullptr) return "";
+    const char *rendererName = SDL_GetRendererName(renderer);
+    if (rendererName) {
+      //SDL_Log("Renderer: %s", rendererName);
+    }
     IMGUI_CHECKVERSION();
     if (!shared_font_atlas)
       shared_font_atlas = new ImFontAtlas();
