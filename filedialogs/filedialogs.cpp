@@ -301,7 +301,7 @@ namespace {
     if (renderer == nullptr) return "";
     const char *rendererName = SDL_GetRendererName(renderer);
     if (rendererName) {
-      //printf("Renderer: %s", rendererName);
+      //printf("Renderer: %s\n", rendererName);
     }
     IMGUI_CHECKVERSION();
     if (!shared_font_atlas)
