@@ -1,2 +1,8 @@
-run:
-  BUILD := $(shell ./build.sh 2>/dev/null)
+.PHONY: build
+
+build:
+	./build.sh
+
+prerequisites: build
+
+target: prerequisites 
