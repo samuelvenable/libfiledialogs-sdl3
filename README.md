@@ -104,7 +104,7 @@ int main() {
 
 # Platforms
 
-Supports Windows, macOS, Linux, FreeBSD, DragonFly BSD, NetBSD, OpenBSD, and SunOS. 
+Supports Windows, macOS, Linux, FreeBSD, DragonFly BSD, NetBSD, OpenBSD, and SunOS.
 
 ![win32.png](win32.png)
 
