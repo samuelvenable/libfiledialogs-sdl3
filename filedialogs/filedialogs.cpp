@@ -604,6 +604,7 @@ namespace {
         bool inside = false;
         int x = 0, y = 0, w = 0, h = 0;
         SDL_GetWindowPosition(window, &x, &y);
+        printf("1\n");
         if (SDL_GetCurrentRenderOutputSize(SDL_GetRenderer(window), &w, &h)) {
           int numDisplays = 0;
           SDL_DisplayID *dispId = SDL_GetDisplays(&numDisplays);
@@ -611,7 +612,7 @@ namespace {
             if (numDisplays >= 1) {
               for (int i = 0; i < numDisplays; i++) {
                 message_pump();
-                if (!SDL_GetDisplayBounds(i, &rect)) {
+                if (SDL_GetDisplayBounds(dispId[i], &rect)) {
                   if (x >= rect.x && y >= rect.y &&
                   x + w <= rect.x + rect.w && y + h <= rect.y + rect.h) {
                     inside = true;
