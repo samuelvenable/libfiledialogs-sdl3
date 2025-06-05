@@ -56,7 +56,7 @@
 #else
 #if (defined(__APPLE__) && defined(__MACH__))
 #include <AppKit/AppKit.h>
-#elif defined(__linux__)
+#elif ((defined(__linux__) && !defined(__ANDROID__)) || (defined(__FreeBSD__) || defined(__DragonFly__) || defined(__NetBSD__) || defined(__OpenBSD__)) || defined(__sun))
 #include <X11/Xlib.h>
 #endif
 #include <unistd.h>
@@ -554,7 +554,7 @@ namespace {
           childFrame.size.width, childFrame.size.height) display:YES];
           [nsWnd makeKeyAndOrderFront:nil];
         }
-        #elif defined(__linux__)
+        #elif ((defined(__linux__) && !defined(__ANDROID__)) || (defined(__FreeBSD__) || defined(__DragonFly__) || defined(__NetBSD__) || defined(__OpenBSD__)) || defined(__sun))
         SDL_SysWMinfo system_info;
         SDL_VERSION(&system_info.version);
         if (!SDL_GetWindowWMInfo(window, &system_info)) return "";
