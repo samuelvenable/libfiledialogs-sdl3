@@ -504,32 +504,34 @@ namespace {
         }
         #if defined(_WIN32)
         SDL_PropertiesID propId = SDL_GetWindowProperties(window);
-        if (!propId) return "";
-        HWND hWnd = (HWND)SDL_GetPointerProperty(propId, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
-        if (!hWnd) return "";
-        SetWindowLongPtrW(hWnd, GWL_STYLE, GetWindowLongPtrW(hWnd, GWL_STYLE) & ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX));
-        SetWindowLongPtrW(hWnd, GWL_EXSTYLE, GetWindowLongPtrW(hWnd, GWL_EXSTYLE) |
-        ((ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) ? WS_EX_TOPMOST : 0));
-        SetWindowPos(hWnd, ((ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) ?  HWND_TOPMOST : HWND_TOP),
-        0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-        if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
-          if (IsIconic((HWND)(void *)(std::uintptr_t)strtoull(
-          ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)))
-          ShowWindow((HWND)(void *)(std::uintptr_t)strtoull(
-          ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10), SW_RESTORE);
-          SetWindowLongPtrW(hWnd, GWLP_HWNDPARENT, (LONG_PTR)(std::uintptr_t)strtoull(
-          ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10));
-          RECT parentFrame; GetWindowRect((HWND)(void *)(std::uintptr_t)strtoull(
-          ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10), &parentFrame);
-          int parentFrameWidth = parentFrame.right - parentFrame.left;
-          int parentFrameHeight = parentFrame.bottom - parentFrame.top;
-          RECT childFrame; GetWindowRect(hWnd, &childFrame);
-          int childFrameWidth = childFrame.right - childFrame.left;
-          int childFrameHeight = childFrame.bottom - childFrame.top;
-          MoveWindow(hWnd, (parentFrame.left + (parentFrameWidth / 2)) - (childFrameWidth / 2),
-          (parentFrame.top + (parentFrameHeight / 2)) - (childFrameHeight / 2), childFrameWidth, childFrameHeight, TRUE);
-          PostMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)GetIcon((HWND)(void *)(std::uintptr_t)strtoull(
-          ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)));
+        if (propId) {
+          HWND hWnd = (HWND)SDL_GetPointerProperty(propId, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+          if (hWnd) {
+            SetWindowLongPtrW(hWnd, GWL_STYLE, GetWindowLongPtrW(hWnd, GWL_STYLE) & ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX));
+            SetWindowLongPtrW(hWnd, GWL_EXSTYLE, GetWindowLongPtrW(hWnd, GWL_EXSTYLE) |
+            ((ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) ? WS_EX_TOPMOST : 0));
+            SetWindowPos(hWnd, ((ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) ?  HWND_TOPMOST : HWND_TOP),
+            0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+            if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
+              if (IsIconic((HWND)(void *)(std::uintptr_t)strtoull(
+              ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)))
+              ShowWindow((HWND)(void *)(std::uintptr_t)strtoull(
+              ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10), SW_RESTORE);
+              SetWindowLongPtrW(hWnd, GWLP_HWNDPARENT, (LONG_PTR)(std::uintptr_t)strtoull(
+              ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10));
+              RECT parentFrame; GetWindowRect((HWND)(void *)(std::uintptr_t)strtoull(
+              ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10), &parentFrame);
+              int parentFrameWidth = parentFrame.right - parentFrame.left;
+              int parentFrameHeight = parentFrame.bottom - parentFrame.top;
+              RECT childFrame; GetWindowRect(hWnd, &childFrame);
+              int childFrameWidth = childFrame.right - childFrame.left;
+              int childFrameHeight = childFrame.bottom - childFrame.top;
+              MoveWindow(hWnd, (parentFrame.left + (parentFrameWidth / 2)) - (childFrameWidth / 2),
+              (parentFrame.top + (parentFrameHeight / 2)) - (childFrameHeight / 2), childFrameWidth, childFrameHeight, TRUE);
+              PostMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)GetIcon((HWND)(void *)(std::uintptr_t)strtoull(
+              ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)));
+            }
+          }
         }
         #elif (defined(__APPLE__) && defined(__MACH__))
         SDL_PropertiesID propId = SDL_GetWindowProperties(window);
