@@ -563,7 +563,7 @@ namespace {
         if (propsId) {
           Display *display = (Display *)SDL_GetPointerProperty(propsId, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr);
           if (display) {
-            Window xWnd = (Window)(unsigned long long)SDL_GetPointerProperty(propsId, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, nullptr);
+            Window xWnd = (Window)SDL_GetNumberProperty(prp, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
             if (xWnd) {
               if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
                 Window window = (Window)(std::uintptr_t)strtoull(
