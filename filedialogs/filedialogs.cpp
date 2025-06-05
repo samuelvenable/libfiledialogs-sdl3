@@ -558,7 +558,6 @@ namespace {
         SDL_PropertiesID propId = SDL_GetWindowProperties(window);
         if (!propId) return "";
         Display *display = (Display *)SDL_GetPointerProperty(propId, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr);
-        if (!display) return "";
         if (display) {
           Window xWnd = (Window)(unsigned long long)SDL_GetPointerProperty(propId, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, nullptr);
           if (!xWnd) return "";
