@@ -503,10 +503,10 @@ namespace {
           SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
         }
         #if defined(_WIN32)
-        SDL_SysWMinfo system_info;
-        SDL_VERSION(&system_info.version);
-        if (!SDL_GetWindowWMInfo(window, &system_info)) return "";
-        HWND hWnd = system_info.info.win.window;
+        SDL_PropertiesID propId = SDL_GetWindowProperties(window);
+        if (!propId) return "";
+        HWND hWnd = (HWND)SDL_GetPointerProperty(propId, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+        if (!hWnd) return "";
         SetWindowLongPtrW(hWnd, GWL_STYLE, GetWindowLongPtrW(hWnd, GWL_STYLE) & ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX));
         SetWindowLongPtrW(hWnd, GWL_EXSTYLE, GetWindowLongPtrW(hWnd, GWL_EXSTYLE) |
         ((ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) ? WS_EX_TOPMOST : 0));
@@ -532,10 +532,10 @@ namespace {
           ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)));
         }
         #elif (defined(__APPLE__) && defined(__MACH__))
-        SDL_SysWMinfo system_info;
-        SDL_VERSION(&system_info.version);
-        if (!SDL_GetWindowWMInfo(window, &system_info)) return "";
-        NSWindow *nsWnd = system_info.info.cocoa.window;
+        SDL_PropertiesID propId = SDL_GetWindowProperties(window);
+        if (!propId) return "";
+        NSWindow *nsWnd = (NSWindow *)SDL_GetPointerProperty(propId, SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, nullptr);
+        if (!nsWnd) return "";
         [[nsWnd standardWindowButton:NSWindowCloseButton] setHidden:NO];
         [[nsWnd standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
         [[nsWnd standardWindowButton:NSWindowZoomButton] setHidden:YES];
@@ -555,12 +555,13 @@ namespace {
           [nsWnd makeKeyAndOrderFront:nil];
         }
         #elif ((defined(__linux__) && !defined(__ANDROID__)) || (defined(__FreeBSD__) || defined(__DragonFly__) || defined(__NetBSD__) || defined(__OpenBSD__)) || defined(__sun))
-        SDL_SysWMinfo system_info;
-        SDL_VERSION(&system_info.version);
-        if (!SDL_GetWindowWMInfo(window, &system_info)) return "";
-        Display *display = system_info.info.x11.display;
+        SDL_PropertiesID propId = SDL_GetWindowProperties(window);
+        if (!propId) return "";
+        Display *display = (Display *)SDL_GetPointerProperty(propId, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr);
+        if (!display) return "";
         if (display) {
-          Window xWnd = system_info.info.x11.window;
+          Window xWnd = (Window)(unsigned long long)SDL_GetPointerProperty(propId, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, nullptr);
+          if (!xWnd) return "";
           if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
             Window window = (Window)(std::uintptr_t)strtoull(
             ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10);
