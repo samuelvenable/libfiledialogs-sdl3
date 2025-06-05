@@ -503,9 +503,9 @@ namespace {
           SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
         }
         #if defined(_WIN32)
-        SDL_PropertiesID propId = SDL_GetWindowProperties(window);
-        if (propId) {
-          HWND hWnd = (HWND)SDL_GetPointerProperty(propId, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+        SDL_PropertiesID propsId = SDL_GetWindowProperties(window);
+        if (propsId) {
+          HWND hWnd = (HWND)SDL_GetPointerProperty(propsId, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
           if (hWnd) {
             SetWindowLongPtrW(hWnd, GWL_STYLE, GetWindowLongPtrW(hWnd, GWL_STYLE) & ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX));
             SetWindowLongPtrW(hWnd, GWL_EXSTYLE, GetWindowLongPtrW(hWnd, GWL_EXSTYLE) |
@@ -534,9 +534,9 @@ namespace {
           }
         }
         #elif (defined(__APPLE__) && defined(__MACH__))
-        SDL_PropertiesID propId = SDL_GetWindowProperties(window);
-        if (propId) {
-          NSWindow *nsWnd = (NSWindow *)SDL_GetPointerProperty(propId, SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, nullptr);
+        SDL_PropertiesID propsId = SDL_GetWindowProperties(window);
+        if (propsId) {
+          NSWindow *nsWnd = (NSWindow *)SDL_GetPointerProperty(propsId, SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, nullptr);
           if (nsWnd) {
             [[nsWnd standardWindowButton:NSWindowCloseButton] setHidden:NO];
             [[nsWnd standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
@@ -559,42 +559,44 @@ namespace {
           }
         }
         #elif ((defined(__linux__) && !defined(__ANDROID__)) || (defined(__FreeBSD__) || defined(__DragonFly__) || defined(__NetBSD__) || defined(__OpenBSD__)) || defined(__sun))
-        SDL_PropertiesID propId = SDL_GetWindowProperties(window);
-        if (!propId) return "";
-        Display *display = (Display *)SDL_GetPointerProperty(propId, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr);
-        if (display) {
-          Window xWnd = (Window)(unsigned long long)SDL_GetPointerProperty(propId, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, nullptr);
-          if (!xWnd) return "";
-          if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
-            Window window = (Window)(std::uintptr_t)strtoull(
-            ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10);
-            Window parentFrameRoot = 0; int parentFrameX = 0, parentFrameY = 0;
-            Window parentWindow = 0, rootWindow = 0, *childrenWindows = nullptr;
-            XSetTransientForHint(display, xWnd, window);
-            unsigned numberOfChildren = 0;
-            while (true) {
-              if (XQueryTree(display, window, &rootWindow, &parentWindow, &childrenWindows, &numberOfChildren) == 0) {
-                break;
-              }
-              if (childrenWindows) {
-                XFree(childrenWindows);
-              }
-              if (window == rootWindow || parentWindow == rootWindow) {
-                break;
-              } else {
-                window = parentWindow;
+        SDL_PropertiesID propsId = SDL_GetWindowProperties(window);
+        if (propsId) {
+          Display *display = (Display *)SDL_GetPointerProperty(propsId, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr);
+          if (display) {
+            Window xWnd = (Window)(unsigned long long)SDL_GetPointerProperty(propsId, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, nullptr);
+            if (xWnd) {
+              if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
+                Window window = (Window)(std::uintptr_t)strtoull(
+                ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10);
+                Window parentFrameRoot = 0; int parentFrameX = 0, parentFrameY = 0;
+                Window parentWindow = 0, rootWindow = 0, *childrenWindows = nullptr;
+                XSetTransientForHint(display, xWnd, window);
+                unsigned numberOfChildren = 0;
+                while (true) {
+                  if (XQueryTree(display, window, &rootWindow, &parentWindow, &childrenWindows, &numberOfChildren) == 0) {
+                    break;
+                  }
+                  if (childrenWindows) {
+                    XFree(childrenWindows);
+                  }
+                  if (window == rootWindow || parentWindow == rootWindow) {
+                    break;
+                  } else {
+                    window = parentWindow;
+                  }
+                }
+                XWindowAttributes parentWA; XGetWindowAttributes(display, window, &parentWA);
+                unsigned parentFrameWidth = 0, parentFrameHeight = 0, parentFrameBorder = 0, parentFrameDepth = 0;
+                XGetGeometry(display, window, &parentFrameRoot, &parentFrameX, &parentFrameY,
+                &parentFrameWidth, &parentFrameHeight, &parentFrameBorder, &parentFrameDepth);
+                Window childFrameRoot = 0; int childFrameX = 0, childFrameY = 0;
+                unsigned childFrameWidth = 0, childFrameHeight = 0, childFrameBorder = 0, childFrameDepth = 0;
+                XGetGeometry(display, xWnd, &childFrameRoot, &childFrameX, &childFrameY,
+                &childFrameWidth, &childFrameHeight, &childFrameBorder, &childFrameDepth);
+                XMoveWindow(display, xWnd, (parentWA.x + (parentFrameWidth / 2)) - (childFrameWidth / 2),
+                (parentWA.y + (parentFrameHeight / 2)) - (childFrameHeight / 2));
               }
             }
-            XWindowAttributes parentWA; XGetWindowAttributes(display, window, &parentWA);
-            unsigned parentFrameWidth = 0, parentFrameHeight = 0, parentFrameBorder = 0, parentFrameDepth = 0;
-            XGetGeometry(display, window, &parentFrameRoot, &parentFrameX, &parentFrameY,
-            &parentFrameWidth, &parentFrameHeight, &parentFrameBorder, &parentFrameDepth);
-            Window childFrameRoot = 0; int childFrameX = 0, childFrameY = 0;
-            unsigned childFrameWidth = 0, childFrameHeight = 0, childFrameBorder = 0, childFrameDepth = 0;
-            XGetGeometry(display, xWnd, &childFrameRoot, &childFrameX, &childFrameY,
-            &childFrameWidth, &childFrameHeight, &childFrameBorder, &childFrameDepth);
-            XMoveWindow(display, xWnd, (parentWA.x + (parentFrameWidth / 2)) - (childFrameWidth / 2),
-            (parentWA.y + (parentFrameHeight / 2)) - (childFrameHeight / 2));
           }
         }
         #endif
