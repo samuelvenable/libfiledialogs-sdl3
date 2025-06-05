@@ -291,6 +291,7 @@ namespace {
     std::to_string(1)) ? SDL_WINDOW_BORDERLESS : 0));
     window = SDL_CreateWindow(title.c_str(), IFD_DIALOG_WIDTH, IFD_DIALOG_HEIGHT, windowFlags);
     if (window == nullptr) return "";
+    if ((ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty())
     SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
     dialog = window;
     if (ngs::fs::environment_get_variable("IMGUI_DIALOG_FULLSCREEN") == std::to_string(1)) {
@@ -500,6 +501,7 @@ namespace {
           ngs::fs::environment_get_variable("IMGUI_DIALOG_HEIGHT").empty() &&
           (type == openFile || type == openFiles || type == saveFile || type == selectFolder)) {
           SDL_SetWindowSize(window, 640, 360);
+          if ((ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty())
           SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
         }
         #if defined(_WIN32)
