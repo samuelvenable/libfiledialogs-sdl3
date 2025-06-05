@@ -114,7 +114,7 @@ Supports Windows, macOS, Linux, FreeBSD, DragonFly BSD, NetBSD, OpenBSD, and Sun
 
 **Build Dependencies:**
 - Windows: Visual Studio (or MSYS2, MinGW, pacman, g++, make, pkg-config), sdl3
-- macOS: Xcode command line tools, MacPorts (for universal binaries), clang++, make, sdl3, pkg-config
+- macOS: Xcode command line tools, MacPorts (for universal binaries), clang++, make, sdl3
 - Linux: posix-compliant shell at "/bin/sh", g++, make, sdl3, x11, gtk+3.0, gio2.0, glib2.0, pkg-config, cmake
 - FreeBSD: clang++, make, sdl3, x11, gtk+3.0, gio2.0, glib2.0, pkg-config, cmake
 - DragonFly BSD: g++, make, sdl3, x11, gtk+3.0, gio2.0, glib2.0, pkg-config, cmake
