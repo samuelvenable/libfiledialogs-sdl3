@@ -526,8 +526,8 @@ namespace {
               RECT childFrame; GetWindowRect(hWnd, &childFrame);
               int childFrameWidth = childFrame.right - childFrame.left;
               int childFrameHeight = childFrame.bottom - childFrame.top;
-              MoveWindow(hWnd, (parentFrame.left + (parentFrameWidth / 2)) - (childFrameWidth / 2),
-              (parentFrame.top + (parentFrameHeight / 2)) - (childFrameHeight / 2), childFrameWidth, childFrameHeight, TRUE);
+              SDL_SetWindowPosition(window, (parentFrame.left + (parentFrameWidth / 2)) - (childFrameWidth / 2),
+              (parentFrame.top + (parentFrameHeight / 2)) - (childFrameHeight / 2));
               PostMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)GetIcon((HWND)(void *)(std::uintptr_t)strtoull(
               ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)));
             }
@@ -550,10 +550,9 @@ namespace {
               addChildWindow:nsWnd ordered:NSWindowAbove];
               NSRect parentFrame = [(NSWindow *)(void *)(std::uintptr_t)strtoull(
               ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10) frame];
-              NSRect childFrame = [nsWnd frame]; [nsWnd setFrame:NSMakeRect(
+              NSRect childFrame = [nsWnd frame]; SDL_SetWindowPosition(window, 
               (parentFrame.origin.x + (parentFrame.size.width / 2)) - (childFrame.size.width / 2),
-              (parentFrame.origin.y + (parentFrame.size.height / 2)) - (childFrame.size.height / 2),
-              childFrame.size.width, childFrame.size.height) display:YES];
+              (parentFrame.origin.y + (parentFrame.size.height / 2)) - (childFrame.size.height / 2));
               [nsWnd makeKeyAndOrderFront:nil];
             }
           }
@@ -566,34 +565,34 @@ namespace {
             Window xWnd = (Window)SDL_GetNumberProperty(propsId, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
             if (xWnd) {
               if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
-                Window window = (Window)(std::uintptr_t)strtoull(
+                Window xwindow = (Window)(std::uintptr_t)strtoull(
                 ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10);
                 Window parentFrameRoot = 0; int parentFrameX = 0, parentFrameY = 0;
                 Window parentWindow = 0, rootWindow = 0, *childrenWindows = nullptr;
-                XSetTransientForHint(display, xWnd, window);
+                XSetTransientForHint(display, xWnd, xwindow);
                 unsigned numberOfChildren = 0;
                 while (true) {
-                  if (XQueryTree(display, window, &rootWindow, &parentWindow, &childrenWindows, &numberOfChildren) == 0) {
+                  if (XQueryTree(display, xwindow, &rootWindow, &parentWindow, &childrenWindows, &numberOfChildren) == 0) {
                     break;
                   }
                   if (childrenWindows) {
                     XFree(childrenWindows);
                   }
-                  if (window == rootWindow || parentWindow == rootWindow) {
+                  if (xwindow == rootWindow || parentWindow == rootWindow) {
                     break;
                   } else {
-                    window = parentWindow;
+                    xwindow = parentWindow;
                   }
                 }
-                XWindowAttributes parentWA; XGetWindowAttributes(display, window, &parentWA);
+                XWindowAttributes parentWA; XGetWindowAttributes(display, xwindow, &parentWA);
                 unsigned parentFrameWidth = 0, parentFrameHeight = 0, parentFrameBorder = 0, parentFrameDepth = 0;
-                XGetGeometry(display, window, &parentFrameRoot, &parentFrameX, &parentFrameY,
+                XGetGeometry(display, xwindow, &parentFrameRoot, &parentFrameX, &parentFrameY,
                 &parentFrameWidth, &parentFrameHeight, &parentFrameBorder, &parentFrameDepth);
                 Window childFrameRoot = 0; int childFrameX = 0, childFrameY = 0;
                 unsigned childFrameWidth = 0, childFrameHeight = 0, childFrameBorder = 0, childFrameDepth = 0;
                 XGetGeometry(display, xWnd, &childFrameRoot, &childFrameX, &childFrameY,
                 &childFrameWidth, &childFrameHeight, &childFrameBorder, &childFrameDepth);
-                XMoveWindow(display, xWnd, (parentWA.x + (parentFrameWidth / 2)) - (childFrameWidth / 2),
+                SDL_SetWindowPosition(window, (parentWA.x + (parentFrameWidth / 2)) - (childFrameWidth / 2),
                 (parentWA.y + (parentFrameHeight / 2)) - (childFrameHeight / 2));
               }
             }
