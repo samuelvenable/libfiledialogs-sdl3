@@ -535,26 +535,28 @@ namespace {
         }
         #elif (defined(__APPLE__) && defined(__MACH__))
         SDL_PropertiesID propId = SDL_GetWindowProperties(window);
-        if (!propId) return "";
-        NSWindow *nsWnd = (NSWindow *)SDL_GetPointerProperty(propId, SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, nullptr);
-        if (!nsWnd) return "";
-        [[nsWnd standardWindowButton:NSWindowCloseButton] setHidden:NO];
-        [[nsWnd standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
-        [[nsWnd standardWindowButton:NSWindowZoomButton] setHidden:YES];
-        [[nsWnd standardWindowButton:NSWindowCloseButton] setEnabled:YES];
-        [[nsWnd standardWindowButton:NSWindowMiniaturizeButton] setEnabled:NO];
-        [[nsWnd standardWindowButton:NSWindowZoomButton] setEnabled:NO];
-        if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
-          [(NSWindow *)(void *)(std::uintptr_t)strtoull(
-          ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)
-          addChildWindow:nsWnd ordered:NSWindowAbove];
-          NSRect parentFrame = [(NSWindow *)(void *)(std::uintptr_t)strtoull(
-          ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10) frame];
-          NSRect childFrame = [nsWnd frame]; [nsWnd setFrame:NSMakeRect(
-          (parentFrame.origin.x + (parentFrame.size.width / 2)) - (childFrame.size.width / 2),
-          (parentFrame.origin.y + (parentFrame.size.height / 2)) - (childFrame.size.height / 2),
-          childFrame.size.width, childFrame.size.height) display:YES];
-          [nsWnd makeKeyAndOrderFront:nil];
+        if (propId) {
+          NSWindow *nsWnd = (NSWindow *)SDL_GetPointerProperty(propId, SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, nullptr);
+          if (nsWnd) {
+            [[nsWnd standardWindowButton:NSWindowCloseButton] setHidden:NO];
+            [[nsWnd standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
+            [[nsWnd standardWindowButton:NSWindowZoomButton] setHidden:YES];
+            [[nsWnd standardWindowButton:NSWindowCloseButton] setEnabled:YES];
+            [[nsWnd standardWindowButton:NSWindowMiniaturizeButton] setEnabled:NO];
+            [[nsWnd standardWindowButton:NSWindowZoomButton] setEnabled:NO];
+            if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
+              [(NSWindow *)(void *)(std::uintptr_t)strtoull(
+              ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)
+              addChildWindow:nsWnd ordered:NSWindowAbove];
+              NSRect parentFrame = [(NSWindow *)(void *)(std::uintptr_t)strtoull(
+              ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10) frame];
+              NSRect childFrame = [nsWnd frame]; [nsWnd setFrame:NSMakeRect(
+              (parentFrame.origin.x + (parentFrame.size.width / 2)) - (childFrame.size.width / 2),
+              (parentFrame.origin.y + (parentFrame.size.height / 2)) - (childFrame.size.height / 2),
+              childFrame.size.width, childFrame.size.height) display:YES];
+              [nsWnd makeKeyAndOrderFront:nil];
+            }
+          }
         }
         #elif ((defined(__linux__) && !defined(__ANDROID__)) || (defined(__FreeBSD__) || defined(__DragonFly__) || defined(__NetBSD__) || defined(__OpenBSD__)) || defined(__sun))
         SDL_PropertiesID propId = SDL_GetWindowProperties(window);
