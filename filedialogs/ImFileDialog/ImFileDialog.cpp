@@ -41,22 +41,23 @@
 #include <sstream>
 #include <algorithm>
 
-#include "ImFileDialog.h"
-#include "ImFileDialogMacros.h"
-#include "filedialogs.hpp"
+#include <filedialogs.hpp>
+
+#include <ImFileDialog/ImFileDialog.h>
+#include <ImFileDialog/ImFileDialogMacros.h>
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
 
-#include "imgui.h"
-#include "imgui_internal.h"
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #endif
 
-#include "stb_image.h"
+#include <imgui/stb_image.h>
 
 #if ((defined(__linux__) && !defined(__ANDROID__)) || (defined(__FreeBSD__) || defined(__DragonFly__) || defined(__NetBSD__) || defined(__OpenBSD__)) || defined(__sun))
 #include "lunasvg/include/lunasvg.h"
