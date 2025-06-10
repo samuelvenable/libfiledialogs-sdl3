@@ -41,10 +41,10 @@
 #include <sstream>
 #include <algorithm>
 
-#include <filedialogs.hpp>
+#include "ImFileDialog.h"
+#include "ImFileDialogMacros.h"
 
-#include <ImFileDialog/ImFileDialog.h>
-#include <ImFileDialog/ImFileDialogMacros.h>
+#include <filedialogs.hpp>
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
