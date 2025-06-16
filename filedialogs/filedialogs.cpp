@@ -37,9 +37,8 @@
 #include <map>
 
 #include <imgui/imgui.h>
-
-#include <imgui/backends/imgui_impl_sdl3.h>
-#include <imgui/backends/imgui_impl_sdlrenderer3.h>
+#include <imgui/imgui_impl_sdl3.h>
+#include <imgui/imgui_impl_sdlrenderer3.h>
 
 #include <ImFileDialog/ImFileDialog.h>
 #include <ImFileDialog/ImFileDialogMacros.h>
@@ -71,13 +70,8 @@
 #endif
 #define DIGITS_MIN -999999999999999
 #define DIGITS_MAX  999999999999999
-
-#if defined(_MSC_VER)
-#if defined(_WIN32) && !defined(_WIN64)
-#pragma comment(lib, __FILE__"\\..\\lib\\x86\\SDL3.lib")
-#elif defined(_WIN32) && defined(_WIN64)
-#pragma comment(lib, __FILE__"\\..\\lib\\x64\\SDL3.lib")
-#endif
+#if (defined(_WIN32) && defined(_MSC_VER))
+#pragma comment(lib, "SDL3.lib")
 #endif
 
 using std::string;
