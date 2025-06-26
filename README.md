@@ -39,12 +39,14 @@ environment variable */
 
 // for MSVC
 #if (defined(_WIN32) && defined(_MSC_VER))
-#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#pragma comment(linker, "/subsystem:console /entry:mainCRTStartup")
 #endif
 
 namespace {
   void init() {
-    #if (defined(__APPLE__) && defined(__MACH__))
+    #if defined(_WIN32)
+    SetConsoleOutputCP(CP_UTF8);
+    #elif (defined(__APPLE__) && defined(__MACH__))
     // hide icon from dock on macOS to match all the other platforms
     [[NSApplication sharedApplication] setActivationPolicy:(NSApplicationActivationPolicy)1];
     if (@available(macOS 14.0, *)) {
