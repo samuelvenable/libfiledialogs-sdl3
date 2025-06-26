@@ -44,7 +44,7 @@
 #if defined(_WIN32)
 #undef main
 #if defined(_MSC_VER)
-#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#pragma comment(linker, "/subsystem:console /entry:mainCRTStartup")
 #endif
 namespace {
   HRSRC        res[159];
