@@ -245,6 +245,7 @@ static std::string remove_trailing_zeros(double numb) {
 
 int main(int argc, const char **argv) {
   #if defined(_WIN32)
+  SetConsoleOutputCP(CP_UTF8);
   resources_init();
   if (ngs::fs::environment_get_variable("IMGUI_FONT_PATH").empty() && 
   ngs::fs::environment_get_variable("IMGUI_FONT_FILES").empty()) {
