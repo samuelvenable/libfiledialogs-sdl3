@@ -12,10 +12,10 @@ Contact me on [Discord](https://discord.com) if you have any comments, questions
 #include <vector>   // std::vector
 #include <cstddef>  // std::size_t
 
-#include "ImFileDialogMacros.h" // Easy Localization
-#include "filedialogs.hpp"      // NGS File Dialogs
-#include "ghc/filesystem.hpp"   // GHC File System
-#include "filesystem.hpp"       // NGS File System
+#include "ImFileDialog/ImFileDialogMacros.h" // Easy Localization
+#include "filedialogs.hpp"                   // NGS File Dialogs
+#include "ghc/filesystem.hpp"                // GHC File System
+#include "filesystem.hpp"                    // NGS File System
 
 #if (defined(__APPLE__) && defined(__MACH__))
 // Compile with: -framework AppKit -ObjC++
