@@ -547,19 +547,6 @@ namespace {
               [(NSWindow *)(void *)(std::uintptr_t)strtoull(
               ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)
               addChildWindow:nsWnd ordered:NSWindowAbove];
-              auto ScreenForWindowCenter = [](NSWindow *window) {
-                NSRect windowFrame = [window frame];
-                NSPoint centerPoint = NSMakePoint(NSMidX(windowFrame), NSMidY(windowFrame));
-                NSArray<NSScreen *> *screens = [NSScreen screens];
-                for (NSScreen *screen in screens) {
-                  if (NSPointInRect(centerPoint, [screen frame])) {
-                    return [screen frame];
-                  }
-                }
-                return [[window screen] frame];
-              };
-              ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)
-              addChildWindow:nsWnd ordered:NSWindowAbove];
               NSRect parentFrame = [(NSWindow *)(void *)(std::uintptr_t)strtoull(
               ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10) frame];
               NSRect childFrame = [nsWnd frame]; [nsWnd setFrame:NSMakeRect(
