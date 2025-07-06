@@ -584,9 +584,9 @@ namespace {
                     xwindow = parentWindow;
                   }
                 }
-                XWindowAttributes parentWA; XGetWindowAttributes(display, window, &parentWA);
+                XWindowAttributes parentWA; XGetWindowAttributes(display, xwindow, &parentWA);
                 unsigned parentFrameWidth = 0, parentFrameHeight = 0, parentFrameBorder = 0, parentFrameDepth = 0;
-                XGetGeometry(display, window, &parentFrameRoot, &parentFrameX, &parentFrameY,
+                XGetGeometry(display, xwindow, &parentFrameRoot, &parentFrameX, &parentFrameY,
                 &parentFrameWidth, &parentFrameHeight, &parentFrameBorder, &parentFrameDepth);
                 Window childFrameRoot = 0; int childFrameX = 0, childFrameY = 0;
                 unsigned childFrameWidth = 0, childFrameHeight = 0, childFrameBorder = 0, childFrameDepth = 0;
