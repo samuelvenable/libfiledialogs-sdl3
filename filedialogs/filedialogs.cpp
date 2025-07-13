@@ -285,9 +285,7 @@ namespace {
     SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
     SDL_WindowFlags windowFlags = (SDL_WindowFlags)(
     ((ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) ? SDL_WINDOW_ALWAYS_ON_TOP : 0) |
-    SDL_WINDOW_UTILITY | SDL_WINDOW_HIDDEN | ((ngs::fs::environment_get_variable("IMGUI_DIALOG_RESIZE") ==
-    std::to_string(1)) ? SDL_WINDOW_RESIZABLE : 0) | ((ngs::fs::environment_get_variable("IMGUI_DIALOG_NOBORDER") ==
-    std::to_string(1)) ? SDL_WINDOW_BORDERLESS : 0));
+    SDL_WINDOW_UTILITY | SDL_WINDOW_HIDDEN | SDL_WINDOW_BORDERLESS);
     window = SDL_CreateWindow(title.c_str(), IFD_DIALOG_WIDTH, IFD_DIALOG_HEIGHT, windowFlags);
     if (window == nullptr) return "";
     SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -351,6 +349,23 @@ namespace {
     ImVec4 clear_color = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
     string filterNew = imgui_filter(filter, (type == selectFolder));
     SDL_Event e; string result;
+    #if defined(_WIN32)
+    HWND hWnd = nullptr;
+    RECT parentFrame;
+    RECT childFrame;
+    int parentFrameWidth = 0;
+    int parentFrameHeight = 0;
+    int childFrameWidth = 0;
+    int childFrameHeight = 0;
+    #elif ((defined(__linux__) && !defined(__ANDROID__)) || (defined(__FreeBSD__) || defined(__DragonFly__) || defined(__NetBSD__) || defined(__OpenBSD__)) || defined(__sun))
+    Display *display = nullptr;
+    Window xWnd = 0;
+    XWindowAttributes parentWA;
+    unsigned childFrameWidth = 0;
+    unsigned childFrameHeight = 0;
+    unsigned parentFrameWidth = 0;
+    unsigned parentFrameHeight = 0;
+    #endif
     while (true) {
       while (SDL_PollEvent(&e)) {
         ImGui_ImplSDL3_ProcessEvent(&e);
@@ -365,7 +380,6 @@ namespace {
       else if (type == selectFolder) ifd::FileDialog::Instance().Open("GetDirectory", "Select Directory", "", false, fname.c_str(), dir.c_str());
       else if (type == saveFile) ifd::FileDialog::Instance().Save("GetSaveFileName", "Save As", filterNew.c_str(), fname.c_str(), dir.c_str());
       else if (type == oneButton) {
-        if (message.empty()) goto finish;
         vector<string> buttons;
         buttons.push_back(IFD_OK);
         ImGuiAl::MsgBox msgbox;
@@ -380,7 +394,6 @@ namespace {
         ImGui::PopID();
         if (selected) goto finish;
       } else if (type == twoButtons) {
-        if (message.empty()) goto finish;
         vector<string> buttons;
         buttons.push_back(IFD_YES);
         buttons.push_back(IFD_NO);
@@ -397,7 +410,6 @@ namespace {
         ImGui::PopID();
         if (selected) goto finish;
       } else if (type == threeButtons) {
-        if (message.empty()) goto finish;
         vector<string> buttons;
         buttons.push_back(IFD_YES);
         buttons.push_back(IFD_NO);
@@ -416,13 +428,12 @@ namespace {
         ImGui::PopID();
         if (selected) goto finish;
       } else if (type == stringInputBox) {
-        if (message.empty()) goto finish;
         vector<string> buttons;
-        if (ngs::fs::environment_get_variable("IMGUI_INPUT_OKONLY") == std::to_string(1)) {
-          buttons.push_back(IFD_OK);
-        } else {
+        if (ngs::fs::environment_get_variable("IMGUI_DIALOG_CANCELABLE") == std::to_string(1)) {
           buttons.push_back(IFD_OK);
           buttons.push_back(IFD_CANCEL);
+        } else {
+          buttons.push_back(IFD_OK);
         }
         ImGuiAl::MsgBox msgbox;
         ImGui::PushID("##msgbox");
@@ -439,13 +450,12 @@ namespace {
         ImGui::PopID();
         if (selected) goto finish;
       } else if (type == numberInputBox) {
-        if (message.empty()) goto finish;
         vector<string> buttons;
-        if (ngs::fs::environment_get_variable("IMGUI_INPUT_OKONLY") == std::to_string(1)) {
-          buttons.push_back(IFD_OK);
-        } else {
+        if (ngs::fs::environment_get_variable("IMGUI_DIALOG_CANCELABLE") == std::to_string(1)) {
           buttons.push_back(IFD_OK);
           buttons.push_back(IFD_CANCEL);
+        } else {
+          buttons.push_back(IFD_OK);
         }
         ImGuiAl::MsgBox msgbox;
         ImGui::PushID("##msgbox");
@@ -498,13 +508,13 @@ namespace {
         if (ngs::fs::environment_get_variable("IMGUI_DIALOG_WIDTH").empty() &&
           ngs::fs::environment_get_variable("IMGUI_DIALOG_HEIGHT").empty() &&
           (type == openFile || type == openFiles || type == saveFile || type == selectFolder)) {
-          SDL_SetWindowSize(window, 640, 360);
+          SDL_SetWindowSize(window, 720, 382);
           SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
         }
         #if defined(_WIN32)
         SDL_PropertiesID propsId = SDL_GetWindowProperties(window);
         if (propsId) {
-          HWND hWnd = (HWND)SDL_GetPointerProperty(propsId, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+          hWnd = (HWND)SDL_GetPointerProperty(propsId, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
           if (hWnd) {
             SetWindowLongPtrW(hWnd, GWL_STYLE, GetWindowLongPtrW(hWnd, GWL_STYLE) & ~(WS_MAXIMIZEBOX | WS_MINIMIZEBOX));
             SetWindowLongPtrW(hWnd, GWL_EXSTYLE, GetWindowLongPtrW(hWnd, GWL_EXSTYLE) |
@@ -512,23 +522,51 @@ namespace {
             SetWindowPos(hWnd, ((ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) ?  HWND_TOPMOST : HWND_TOP),
             0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
             if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
+              EnableWindow((HWND)(void *)(std::uintptr_t)strtoull(
+              ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10), FALSE);
               if (IsIconic((HWND)(void *)(std::uintptr_t)strtoull(
               ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)))
               ShowWindow((HWND)(void *)(std::uintptr_t)strtoull(
               ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10), SW_RESTORE);
               SetWindowLongPtrW(hWnd, GWLP_HWNDPARENT, (LONG_PTR)(std::uintptr_t)strtoull(
               ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10));
-              RECT parentFrame; GetWindowRect((HWND)(void *)(std::uintptr_t)strtoull(
+              GetWindowRect((HWND)(void *)(std::uintptr_t)strtoull(
               ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10), &parentFrame);
-              int parentFrameWidth = parentFrame.right - parentFrame.left;
-              int parentFrameHeight = parentFrame.bottom - parentFrame.top;
-              RECT childFrame; GetWindowRect(hWnd, &childFrame);
-              int childFrameWidth = childFrame.right - childFrame.left;
-              int childFrameHeight = childFrame.bottom - childFrame.top;
+              parentFrameWidth = parentFrame.right - parentFrame.left;
+              parentFrameHeight = parentFrame.bottom - parentFrame.top;
+              GetWindowRect(hWnd, &childFrame);
+              childFrameWidth = childFrame.right - childFrame.left;
+              childFrameHeight = childFrame.bottom - childFrame.top;
               MoveWindow(hWnd, (parentFrame.left + (parentFrameWidth / 2)) - (childFrameWidth / 2),
               (parentFrame.top + (parentFrameHeight / 2)) - (childFrameHeight / 2), childFrameWidth, childFrameHeight, TRUE);
               PostMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)GetIcon((HWND)(void *)(std::uintptr_t)strtoull(
               ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)));
+            }
+            SDL_Rect rect;
+            bool inside = false;
+            int x = 0, y = 0, w = 0, h = 0;
+            SDL_GetWindowPosition(window, &x, &y);
+            if (SDL_GetCurrentRenderOutputSize(SDL_GetRenderer(window), &w, &h)) {
+              int numDisplays = 0;
+              SDL_DisplayID *dispId = SDL_GetDisplays(&numDisplays);
+              if (dispId) {
+                if (numDisplays >= 1) {
+                  for (int i = 0; i < numDisplays; i++) {
+                    message_pump();
+                    if (SDL_GetDisplayBounds(dispId[i], &rect)) {
+                      if (x >= rect.x && y >= rect.y &&
+                      x + w <= rect.x + rect.w && y + h <= rect.y + rect.h) {
+                        inside = true;
+                        break;
+                      }
+                    }
+                  }
+                }
+                SDL_free(dispId);
+              }
+            }
+            if (!inside) {
+              SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
             }
           }
         }
@@ -560,71 +598,19 @@ namespace {
         #elif ((defined(__linux__) && !defined(__ANDROID__)) || (defined(__FreeBSD__) || defined(__DragonFly__) || defined(__NetBSD__) || defined(__OpenBSD__)) || defined(__sun))
         SDL_PropertiesID propsId = SDL_GetWindowProperties(window);
         if (propsId) {
-          Display *display = (Display *)SDL_GetPointerProperty(propsId, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr);
+          display = (Display *)SDL_GetPointerProperty(propsId, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr);
           if (display) {
-            Window xWnd = (Window)SDL_GetNumberProperty(propsId, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
+            xWnd = (Window)SDL_GetNumberProperty(propsId, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0);
             if (xWnd) {
               if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
                 Window xwindow = (Window)(std::uintptr_t)strtoull(
                 ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10);
-                Window parentFrameRoot = 0; int parentFrameX = 0, parentFrameY = 0;
-                Window parentWindow = 0, rootWindow = 0, *childrenWindows = nullptr;
                 XSetTransientForHint(display, xWnd, xwindow);
-                unsigned numberOfChildren = 0;
-                while (true) {
-                  if (XQueryTree(display, xwindow, &rootWindow, &parentWindow, &childrenWindows, &numberOfChildren) == 0) {
-                    break;
-                  }
-                  if (childrenWindows) {
-                    XFree(childrenWindows);
-                  }
-                  if (xwindow == rootWindow || parentWindow == rootWindow) {
-                    break;
-                  } else {
-                    xwindow = parentWindow;
-                  }
-                }
-                XWindowAttributes parentWA; XGetWindowAttributes(display, xwindow, &parentWA);
-                unsigned parentFrameWidth = 0, parentFrameHeight = 0, parentFrameBorder = 0, parentFrameDepth = 0;
-                XGetGeometry(display, xwindow, &parentFrameRoot, &parentFrameX, &parentFrameY,
-                &parentFrameWidth, &parentFrameHeight, &parentFrameBorder, &parentFrameDepth);
-                Window childFrameRoot = 0; int childFrameX = 0, childFrameY = 0;
-                unsigned childFrameWidth = 0, childFrameHeight = 0, childFrameBorder = 0, childFrameDepth = 0;
-                XGetGeometry(display, xWnd, &childFrameRoot, &childFrameX, &childFrameY,
-                &childFrameWidth, &childFrameHeight, &childFrameBorder, &childFrameDepth);
-                XMoveWindow(display, xWnd, (parentWA.x + (parentFrameWidth / 2)) - (childFrameWidth / 2),
-                (parentWA.y + (parentFrameHeight / 2)) - (childFrameHeight / 2));
               }
             }
           }
         }
         #endif
-        SDL_Rect rect;
-        bool inside = false;
-        int x = 0, y = 0, w = 0, h = 0;
-        SDL_GetWindowPosition(window, &x, &y);
-        if (SDL_GetCurrentRenderOutputSize(SDL_GetRenderer(window), &w, &h)) {
-          int numDisplays = 0;
-          SDL_DisplayID *dispId = SDL_GetDisplays(&numDisplays);
-          if (dispId) {
-            if (numDisplays >= 1) {
-              for (int i = 0; i < numDisplays; i++) {
-                message_pump();
-                if (SDL_GetDisplayBounds(dispId[i], &rect)) {
-                  if (x >= rect.x && y >= rect.y &&
-                  x + w <= rect.x + rect.w && y + h <= rect.y + rect.h) {
-                    inside = true;
-                    break;
-                  }
-                }
-              }
-            }
-            SDL_free(dispId);
-          }
-        }
-        if (!inside) {
-          SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-        }
         dialog = nullptr;
       }
       ImGui::Render();
@@ -632,11 +618,49 @@ namespace {
       SDL_RenderClear(renderer);
       ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
       SDL_RenderPresent(renderer);
+      #if ((defined(__linux__) && !defined(__ANDROID__)) || (defined(__FreeBSD__) || defined(__DragonFly__) || defined(__NetBSD__) || defined(__OpenBSD__)) || defined(__sun))
+      if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
+        Window xwindow = (Window)(std::uintptr_t)strtoull(
+        ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10);
+        Window parentFrameRoot = 0; int parentFrameX = 0, parentFrameY = 0;
+        Window parentWindow = 0, rootWindow = 0, *childrenWindows = nullptr;
+        unsigned numberOfChildren = 0;
+        while (true) {
+          if (XQueryTree(display, xwindow, &rootWindow, &parentWindow, &childrenWindows, &numberOfChildren) == 0) {
+            break;
+          }
+          if (childrenWindows) {
+            XFree(childrenWindows);
+          }
+          if (xwindow == rootWindow || parentWindow == rootWindow) {
+            break;
+          } else {
+            xwindow = parentWindow;
+          }
+        }
+        XGetWindowAttributes(display, xwindow, &parentWA);
+        unsigned parentFrameBorder = 0, parentFrameDepth = 0;
+        XGetGeometry(display, xwindow, &parentFrameRoot, &parentFrameX, &parentFrameY,
+        &parentFrameWidth, &parentFrameHeight, &parentFrameBorder, &parentFrameDepth);
+        Window childFrameRoot = 0; int childFrameX = 0, childFrameY = 0;
+        unsigned childFrameBorder = 0, childFrameDepth = 0;
+        XGetGeometry(display, xWnd, &childFrameRoot, &childFrameX, &childFrameY,
+        &childFrameWidth, &childFrameHeight, &childFrameBorder, &childFrameDepth);
+        XMoveWindow(display, xWnd, (parentWA.x + (parentFrameWidth / 2)) - (childFrameWidth / 2),
+        (parentWA.y + (parentFrameHeight / 2)) - (childFrameHeight / 2));
+      }
+      #endif
       if (SDL_GetWindowFlags(window) & SDL_WINDOW_HIDDEN) {
         SDL_ShowWindow(window);
       }
     }
     finish:
+    #if defined(_WIN32)
+    if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
+      EnableWindow((HWND)(void *)(std::uintptr_t)strtoull(
+      ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10), TRUE);
+    }
+    #endif
     ImGui_ImplSDLRenderer3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
     ImGui::DestroyContext();
