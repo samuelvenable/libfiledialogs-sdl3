@@ -11,7 +11,7 @@ if [ `uname` = "Darwin" ]; then
   cp -fr "/opt/local/lib/libiconv.dylib" "./libiconv.dylib"
   install_name_tool -id @loader_path/libiconv.2.dylib ./libiconv.dylib
   install_name_tool -change /opt/local/lib/libiconv.2.dylib @loader_path/libiconv.dylib ./filedialogs
-  cp -f "filedialogs" "../filedialogs.app/Contents/MacOS/filedialogs";
+  cp -fr "./filedialogs" "../filedialogs.app/Contents/MacOS/filedialogs";
   cp -fr "./libSDL3.dylib" "../filedialogs.app/Contents/MacOS/libSDL3.dylib"
   cp -fr "./libiconv.dylib" "../filedialogs.app/Contents/MacOS/libiconv.dylib"
 elif [ $(uname) = "Linux" ]; then
