@@ -276,7 +276,7 @@ namespace {
   ImFontAtlas *shared_font_atlas = nullptr;
 
   string file_dialog_helper(string filter, string fname, string dir, string title, int type, string message = "", string def = "") {   
-    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d12,direct3d11,direct3d,metal,vulkan,opengl,opengles,opengles2,gpu,software");
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d12,direct3d11,direct3d,metal,vulkan,gpu,software");
     #if defined(SDL_VIDEO_DRIVER_X11)
     ngs::fs::environment_set_variable("SDL_VIDEODRIVER", "x11");
     #endif
