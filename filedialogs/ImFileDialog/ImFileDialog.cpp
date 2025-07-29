@@ -44,8 +44,6 @@
 #include "ImFileDialog.h"
 #include "ImFileDialogMacros.h"
 
-#include <filedialogs.hpp>
-
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
@@ -105,9 +103,9 @@ struct HumanReadable {
 
 namespace ifd {
   /* UI CONTROLS */
-  bool FolderNode(const char* label, ImTextureID icon, bool& clicked) {
+  bool FolderNode(const char *label, ImTextureID icon, bool& clicked) {
     ImGuiContext& g = *GImGui;
-    ImGuiWindow* window = g.CurrentWindow;
+    ImGuiWindow *window = g.CurrentWindow;
 
     clicked = false;
 
@@ -117,7 +115,7 @@ namespace ifd {
     const bool is_mouse_x_over_arrow = (g.IO.MousePos.x >= pos.x && g.IO.MousePos.x < pos.x + g.FontSize);
     if (ImGui::InvisibleButton(label, ImVec2(-FLT_MIN, g.FontSize + g.Style.FramePadding.y * 2))) {
       if (is_mouse_x_over_arrow) {
-        int* p_opened = window->StateStorage.GetIntRef(id, 0);
+        int *p_opened = window->StateStorage.GetIntRef(id, 0);
         opened = *p_opened = !*p_opened;
       } else {
         clicked = true;
@@ -127,7 +125,7 @@ namespace ifd {
     bool active = ImGui::IsItemActive();
     bool doubleClick = ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left);
     if (doubleClick && hovered) {
-      int* p_opened = window->StateStorage.GetIntRef(id, 0);
+      int *p_opened = window->StateStorage.GetIntRef(id, 0);
       opened = *p_opened = !*p_opened;
       clicked = false;
     }
@@ -145,9 +143,9 @@ namespace ifd {
     return opened != 0;
   }
 
-  bool FileNode(const char* label, ImTextureID icon) {
+  bool FileNode(const char *label, ImTextureID icon) {
     ImGuiContext& g = *GImGui;
-    ImGuiWindow* window = g.CurrentWindow;
+    ImGuiWindow *window = g.CurrentWindow;
 
     //ImU32 id = window->GetID(label);
     ImVec2 pos = window->DC.CursorPos;
@@ -165,14 +163,14 @@ namespace ifd {
     return ret;
   }
 
-  bool PathBox(const char* label, ghc::filesystem::path& path, char* pathBuffer, ImVec2 size_arg) {
-    ImGuiWindow* window = ImGui::GetCurrentWindow();
+  bool PathBox(const char *label, ghc::filesystem::path& path, char *pathBuffer, ImVec2 size_arg) {
+    ImGuiWindow *window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
       return false;
 
     bool ret = false;
     const ImGuiID id = window->GetID(label);
-    int* state = window->StateStorage.GetIntRef(id, 0);
+    int *state = window->StateStorage.GetIntRef(id, 0);
     
     ImGui::SameLine();
 
@@ -302,9 +300,9 @@ namespace ifd {
     return ret;
   }
 
-  bool FavoriteButton(const char* label, bool isFavorite) {
+  bool FavoriteButton(const char *label, bool isFavorite) {
     ImGuiContext& g = *GImGui;
-    ImGuiWindow* window = g.CurrentWindow;
+    ImGuiWindow *window = g.CurrentWindow;
 
     ImVec2 pos = window->DC.CursorPos;
     bool ret = ImGui::InvisibleButton(label, ImVec2(GUI_ELEMENT_SIZE, GUI_ELEMENT_SIZE));
@@ -357,10 +355,10 @@ namespace ifd {
     return ret;
   }
 
-  bool FileIcon(const char* label, bool isSelected, ImTextureID icon, ImVec2 size, bool hasPreview, int previewWidth, int previewHeight) {
+  bool FileIcon(const char *label, bool isSelected, ImTextureID icon, ImVec2 size, bool hasPreview, int previewWidth, int previewHeight) {
     ImGuiStyle& style = ImGui::GetStyle();
     ImGuiContext& g = *GImGui;
-    ImGuiWindow* window = g.CurrentWindow;
+    ImGuiWindow *window = g.CurrentWindow;
 
     float windowSpace = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
     ImVec2 pos = window->DC.CursorPos;
@@ -454,7 +452,7 @@ namespace ifd {
     m_setDirectory(ghc::filesystem::current_path(ec), false);
 
     // favorites are available on every OS
-    FileTreeNode* quickAccess = new FileTreeNode(IFD_QUICK_ACCESS);
+    FileTreeNode *quickAccess = new FileTreeNode(IFD_QUICK_ACCESS);
     quickAccess->Read = true;
     m_treeCache.push_back(quickAccess);
 
@@ -504,7 +502,7 @@ namespace ifd {
     }
 
     // This PC
-    FileTreeNode* thisPC = new FileTreeNode(IFD_THIS_PC);
+    FileTreeNode *thisPC = new FileTreeNode(IFD_THIS_PC);
     thisPC->Read = true;
     DWORD d = GetLogicalDrives();
     for (int i = 0; i < 26; i++)
@@ -554,7 +552,7 @@ namespace ifd {
     }
 
     // This PC
-    FileTreeNode* thisPC = new FileTreeNode(IFD_THIS_PC);
+    FileTreeNode *thisPC = new FileTreeNode(IFD_THIS_PC);
     thisPC->Read = true;
     for (const auto& entry : ghc::filesystem::directory_iterator("/", ec)) {
       const std::string& filename = entry.path().filename().string();
@@ -1424,7 +1422,7 @@ namespace ifd {
     m_previewLoaderRunning = false;
   }
 
-  void FileDialog::m_clearTree(FileTreeNode* node) {
+  void FileDialog::m_clearTree(FileTreeNode *node) {
     if (node == nullptr)
       return;
 
@@ -1604,7 +1602,7 @@ namespace ifd {
     }
   }
 
-  void FileDialog::m_renderTree(FileTreeNode* node) {
+  void FileDialog::m_renderTree(FileTreeNode *node) {
     // directory
     std::error_code ec;
     ImGui::PushID(node);
@@ -1653,15 +1651,15 @@ namespace ifd {
         ImGui::TableSetupColumn((IFD_NAME + std::string("##filename")).c_str(), ImGuiTableColumnFlags_WidthStretch, 0.0f -1.0f, 0);
         ImGui::TableSetupColumn((IFD_DATE_MODIFIED + std::string("##filedate")).c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize, 0.0f, 1);
         ImGui::TableSetupColumn((IFD_SIZE + std::string("##filesize")).c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize, 0.0f, 2);
-                ImGui::TableSetupScrollFreeze(0, 1);
+        ImGui::TableSetupScrollFreeze(0, 1);
         ImGui::TableHeadersRow();
 
         // sort
-        if (ImGuiTableSortSpecs* sortSpecs = ImGui::TableGetSortSpecs()) {
-                    if (sortSpecs->SpecsDirty) {
+        if (ImGuiTableSortSpecs *sortSpecs = ImGui::TableGetSortSpecs()) {
+          if (sortSpecs->SpecsDirty) {
             sortSpecs->SpecsDirty = false;
             m_sortContent(sortSpecs->Specs->ColumnUserID, sortSpecs->Specs->SortDirection);
-                    }
+          }
         }
 
         // content
