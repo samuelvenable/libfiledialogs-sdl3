@@ -3,7 +3,6 @@
  MIT License
 
  Copyright © 2021 dfranx
- Copyright © 2021-2025 Samuel Venable
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -39,9 +38,9 @@
 #define NOMINMAX
 #endif
 
-#include <filesystem.hpp>
+#include <apifilesystem/filesystem.hpp>
 
-#include <ghc/filesystem.hpp>
+#include <apifilesystem/ghc/filesystem.hpp>
 
 #define IFD_DIALOG_FILE      0
 #define IFD_DIALOG_DIRECTORY 1
@@ -83,8 +82,8 @@ namespace ifd {
     }
     inline float GetZoom() { return m_zoom; }
 
-    std::function<void*(uint8_t*, int, int, char)> CreateTexture; // char -> fmt -> { 0 = BGRA, 1 = RGBA }
-    std::function<void(void*)> DeleteTexture;
+    std::function<void*(uint8_t *, int, int, char)> CreateTexture; // char -> fmt -> { 0 = BGRA, 1 = RGBA }
+    std::function<void(void *)> DeleteTexture;
 
     class FileTreeNode {
     public:
@@ -102,7 +101,7 @@ namespace ifd {
 
       ghc::filesystem::path Path;
       bool Read;
-      std::vector<FileTreeNode*> Children;
+      std::vector<FileTreeNode *> Children;
     };
     class FileData {
     public:
@@ -114,8 +113,8 @@ namespace ifd {
       time_t DateModified;
 
       bool HasIconPreview;
-      void* IconPreview;
-      uint8_t* IconPreviewData;
+      void *IconPreview;
+      uint8_t *IconPreviewData;
       int IconPreviewWidth, IconPreviewHeight;
     };
 
@@ -155,14 +154,14 @@ namespace ifd {
     void m_refreshIconPreview();
     void m_clearIconPreview();
 
-    std::thread* m_previewLoader;
+    std::thread *m_previewLoader;
     bool m_previewLoaderRunning;
     void m_stopPreviewLoader();
     void m_loadPreview();
 
-    std::vector<FileTreeNode*> m_treeCache;
-    void m_clearTree(FileTreeNode* node);
-    void m_renderTree(FileTreeNode* node);
+    std::vector<FileTreeNode *> m_treeCache;
+    void m_clearTree(FileTreeNode *node);
+    void m_renderTree(FileTreeNode *node);
 
     unsigned int m_sortColumn;
     unsigned int m_sortDirection;
@@ -246,10 +245,10 @@ namespace ifd {
   };
 
   static const char *GetDefaultFolderIcon() {
-    return (const char*)&folder_icon[0];
+    return (const char *)&folder_icon[0];
   }
 
   static const char *GetDefaultFileIcon() {
-    return (const char*)&file_icon[0];
+    return (const char *)&file_icon[0];
   }
 }
