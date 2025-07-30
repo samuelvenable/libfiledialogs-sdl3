@@ -20,7 +20,7 @@ elif [ $(uname) = "Linux" ]; then
   cmake .;
   make;
   cd ..;
-  g++ "ImFileDialog/ImFileDialog.cpp" "imgui/imgui.cpp" "imgui/imgui_impl_sdl3.cpp" "imgui/imgui_impl_sdlgpu3.cpp" "imgui/imgui_impl_sdlrenderer3.cpp" "imgui/imgui_draw.cpp" "imgui/imgui_tables.cpp" "imgui/imgui_widgets.cpp" "filesystem.cpp" "filedialogs.cpp" "msgbox/imguial_msgbox.cpp" "main.cpp" -o "filedialogs" -std=c++17 -Wno-format-security -I. -Ilunasvg/include "lunasvg/liblunasvg.a" "lunasvg/plutovg/libplutovg.a" -DIMGUI_USE_WCHAR32 -static-libgcc -static-libstdc++ `pkg-config --cflags --libs sdl3 --static` `pkg-config --cflags --libs gtk+-3.0` `pkg-config --cflags --libs gio-2.0` `pkg-config --cflags --libs glib-2.0` -lX11 -lpthread -no-pie -fPIC;
+  g++ "ImFileDialog/ImFileDialog.cpp" "imgui/imgui.cpp" "imgui/imgui_impl_sdl3.cpp" "imgui/imgui_impl_sdlgpu3.cpp" "imgui/imgui_impl_sdlrenderer3.cpp" "imgui/imgui_draw.cpp" "imgui/imgui_tables.cpp" "imgui/imgui_widgets.cpp" "filesystem.cpp" "filedialogs.cpp" "msgbox/imguial_msgbox.cpp" "main.cpp" -o "filedialogs" -std=c++17 -Wno-format-security -I. -Ilunasvg/include "lunasvg/liblunasvg.a" "lunasvg/plutovg/libplutovg.a" -DIMGUI_USE_WCHAR32 -static-libgcc -static-libstdc++ `pkg-config --cflags sdl3 --static` `pkg-config --cflags --libs gtk+-3.0` `pkg-config --cflags --libs gio-2.0` `pkg-config --cflags --libs glib-2.0` -lX11 -lpthread -no-pie f-Wl,--rpath="\$ORIGIN" -lSDL3 -fPIC;
 elif [ $(uname) = "FreeBSD" ]; then
   cd "lunasvg";
   rm -f "CMakeCache.txt";
@@ -78,7 +78,7 @@ elif [ $(uname) = "Linux" ]; then
   cmake .;
   make;
   cd ..;
-  g++ "ImFileDialog/ImFileDialog.cpp" "imgui/imgui.cpp" "imgui/imgui_impl_sdl3.cpp" "imgui/imgui_impl_sdlgpu3.cpp" "imgui/imgui_impl_sdlrenderer3.cpp" "imgui/imgui_draw.cpp" "imgui/imgui_tables.cpp" "imgui/imgui_widgets.cpp" "filesystem.cpp" "filedialogs.cpp" "msgbox/imguial_msgbox.cpp" -o "libfiledialogs.so" -std=c++17 -DIFD_SHARED_LIBRARY -shared -Wno-format-security -I. -Ilunasvg/include "lunasvg/liblunasvg.a" "lunasvg/plutovg/libplutovg.a" -DIMGUI_USE_WCHAR32 -static-libgcc -static-libstdc++ `pkg-config --cflags --libs sdl3 --static` `pkg-config --cflags --libs gtk+-3.0` `pkg-config --cflags --libs gio-2.0` `pkg-config --cflags --libs glib-2.0` -lX11 -lpthread -fPIC;
+  g++ "ImFileDialog/ImFileDialog.cpp" "imgui/imgui.cpp" "imgui/imgui_impl_sdl3.cpp" "imgui/imgui_impl_sdlgpu3.cpp" "imgui/imgui_impl_sdlrenderer3.cpp" "imgui/imgui_draw.cpp" "imgui/imgui_tables.cpp" "imgui/imgui_widgets.cpp" "filesystem.cpp" "filedialogs.cpp" "msgbox/imguial_msgbox.cpp" -o "libfiledialogs.so" -std=c++17 -DIFD_SHARED_LIBRARY -shared -Wno-format-security -I. -Ilunasvg/include "lunasvg/liblunasvg.a" "lunasvg/plutovg/libplutovg.a" -DIMGUI_USE_WCHAR32 -static-libgcc -static-libstdc++ `pkg-config --cflags sdl3 --static` `pkg-config --cflags --libs gtk+-3.0` `pkg-config --cflags --libs gio-2.0` `pkg-config --cflags --libs glib-2.0` -lX11 -lpthread -Wl,--rpath="\$ORIGIN" -lSDL3 -fPIC;
 elif [ $(uname) = "FreeBSD" ]; then
   cd "lunasvg";
   rm -f "CMakeCache.txt";
