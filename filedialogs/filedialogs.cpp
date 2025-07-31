@@ -582,6 +582,9 @@ namespace {
             [[nsWnd standardWindowButton:NSWindowMiniaturizeButton] setEnabled:NO];
             [[nsWnd standardWindowButton:NSWindowZoomButton] setEnabled:NO];
             if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
+              [[(NSWindow *)(void *)(std::uintptr_t)strtoull(
+              ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)
+              standardWindowButton:NSWindowCloseButton] setEnabled:NO];
               [(NSWindow *)(void *)(std::uintptr_t)strtoull(
               ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)
               addChildWindow:nsWnd ordered:NSWindowAbove];
@@ -659,6 +662,12 @@ namespace {
     if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
       EnableWindow((HWND)(void *)(std::uintptr_t)strtoull(
       ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10), TRUE);
+    }
+    #elif (defined(__APPLE__) && defined(__MACH__))
+    if (!ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").empty()) {
+      [[(NSWindow *)(void *)(std::uintptr_t)strtoull(
+      ngs::fs::environment_get_variable("IMGUI_DIALOG_PARENT").c_str(), nullptr, 10)
+      standardWindowButton:NSWindowCloseButton] setEnabled:YES];
     }
     #endif
     ImGui_ImplSDLRenderer3_Shutdown();
