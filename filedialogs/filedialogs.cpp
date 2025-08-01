@@ -247,21 +247,21 @@ namespace {
   }
 
   void SetupImGuiStyle2() {
-    float text_0 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_TEXT_COLOR_0").c_str(), nullptr);
-    float text_1 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_TEXT_COLOR_1").c_str(), nullptr);
-    float text_2 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_TEXT_COLOR_2").c_str(), nullptr);
-    float head_0 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_HEAD_COLOR_0").c_str(), nullptr);
-    float head_1 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_HEAD_COLOR_1").c_str(), nullptr);
-    float head_2 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_HEAD_COLOR_2").c_str(), nullptr);
-    float area_0 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_AREA_COLOR_0").c_str(), nullptr);
-    float area_1 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_AREA_COLOR_1").c_str(), nullptr);
-    float area_2 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_AREA_COLOR_2").c_str(), nullptr);
-    float body_0 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_BODY_COLOR_0").c_str(), nullptr);
-    float body_1 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_BODY_COLOR_1").c_str(), nullptr);
-    float body_2 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_BODY_COLOR_2").c_str(), nullptr);
-    float pops_0 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_POPS_COLOR_0").c_str(), nullptr);
-    float pops_1 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_POPS_COLOR_1").c_str(), nullptr);
-    float pops_2 = (float)strtod(ngs::fs::environment_get_variable("IMGUI_POPS_COLOR_2").c_str(), nullptr);
+    float text_0 = strtof(ngs::fs::environment_get_variable("IMGUI_TEXT_COLOR_0").c_str(), nullptr);
+    float text_1 = strtof(ngs::fs::environment_get_variable("IMGUI_TEXT_COLOR_1").c_str(), nullptr);
+    float text_2 = strtof(ngs::fs::environment_get_variable("IMGUI_TEXT_COLOR_2").c_str(), nullptr);
+    float head_0 = strtof(ngs::fs::environment_get_variable("IMGUI_HEAD_COLOR_0").c_str(), nullptr);
+    float head_1 = strtof(ngs::fs::environment_get_variable("IMGUI_HEAD_COLOR_1").c_str(), nullptr);
+    float head_2 = strtof(ngs::fs::environment_get_variable("IMGUI_HEAD_COLOR_2").c_str(), nullptr);
+    float area_0 = strtof(ngs::fs::environment_get_variable("IMGUI_AREA_COLOR_0").c_str(), nullptr);
+    float area_1 = strtof(ngs::fs::environment_get_variable("IMGUI_AREA_COLOR_1").c_str(), nullptr);
+    float area_2 = strtof(ngs::fs::environment_get_variable("IMGUI_AREA_COLOR_2").c_str(), nullptr);
+    float body_0 = strtof(ngs::fs::environment_get_variable("IMGUI_BODY_COLOR_0").c_str(), nullptr);
+    float body_1 = strtof(ngs::fs::environment_get_variable("IMGUI_BODY_COLOR_1").c_str(), nullptr);
+    float body_2 = strtof(ngs::fs::environment_get_variable("IMGUI_BODY_COLOR_2").c_str(), nullptr);
+    float pops_0 = strtof(ngs::fs::environment_get_variable("IMGUI_POPS_COLOR_0").c_str(), nullptr);
+    float pops_1 = strtof(ngs::fs::environment_get_variable("IMGUI_POPS_COLOR_1").c_str(), nullptr);
+    float pops_2 = strtof(ngs::fs::environment_get_variable("IMGUI_POPS_COLOR_2").c_str(), nullptr);
     static ImVec3 color_for_text = ImVec3(text_0, text_1, text_2);
     static ImVec3 color_for_head = ImVec3(head_0, head_1, head_2);
     static ImVec3 color_for_area = ImVec3(area_0, area_1, area_2);
@@ -312,7 +312,7 @@ namespace {
       ngs::fs::environment_set_variable("IMGUI_FONT_SIZE", std::to_string(20));
       ImFontConfig config;
       config.MergeMode = true; ImFont *font = nullptr; ImWchar ranges[] = { 0x0020, 0xFFFF, 0 };
-      float fontSize = (float)strtod(ngs::fs::environment_get_variable("IMGUI_FONT_SIZE").c_str(), nullptr);
+      float fontSize = strtof(ngs::fs::environment_get_variable("IMGUI_FONT_SIZE").c_str(), nullptr);
       for (unsigned i = 0; i < fonts.size(); i++) {
         message_pump();
         if (ngs::fs::file_exists(fonts[i])) {
@@ -357,6 +357,8 @@ namespace {
     int parentFrameHeight = 0;
     int childFrameWidth = 0;
     int childFrameHeight = 0;
+    #elif (defined(__APPLE__) && defined(__MACH__))
+    NSInteger windowNumber = 0;
     #elif ((defined(__linux__) && !defined(__ANDROID__)) || (defined(__FreeBSD__) || defined(__DragonFly__) || defined(__NetBSD__) || defined(__OpenBSD__)) || defined(__sun))
     Display *display = nullptr;
     Window xWnd = 0;
@@ -575,6 +577,7 @@ namespace {
         if (propsId) {
           NSWindow *nsWnd = (NSWindow *)SDL_GetPointerProperty(propsId, SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, nullptr);
           if (nsWnd) {
+            windowNumber = [nsWnd windowNumber];
             [[nsWnd standardWindowButton:NSWindowCloseButton] setHidden:NO];
             [[nsWnd standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
             [[nsWnd standardWindowButton:NSWindowZoomButton] setHidden:YES];
@@ -594,7 +597,6 @@ namespace {
               (parentFrame.origin.x + (parentFrame.size.width / 2)) - (childFrame.size.width / 2),
               (parentFrame.origin.y + (parentFrame.size.height / 2)) - (childFrame.size.height / 2),
               childFrame.size.width, childFrame.size.height) display:YES];
-              [nsWnd makeKeyAndOrderFront:nil];
             }
           }
         }
@@ -656,6 +658,20 @@ namespace {
       if (SDL_GetWindowFlags(window) & SDL_WINDOW_HIDDEN) {
         SDL_ShowWindow(window);
       }
+      #if (defined(__APPLE__) && defined(__MACH__))
+      if (windowNumber > 0) {
+        NSWindow *win = [NSApp windowWithWindowNumber:windowNumber];
+        if (win) {
+          [win makeKeyAndOrderFront:nullptr];
+          if (type != openFile && type != openFiles && type != saveFile && type != selectFolder) {
+            NSEvent *event = [NSEvent mouseEventWithType:NSEventTypeLeftMouseDown location:NSMakePoint(1, 1) 
+            modifierFlags:0 timestamp:[NSDate timeIntervalSinceReferenceDate] windowNumber:windowNumber 
+            context:nullptr eventNumber:0 clickCount:1 pressure:0];
+            [NSApp sendEvent:event]; 
+          }
+        }
+      }
+      #endif
     }
     finish:
     #if defined(_WIN32)
