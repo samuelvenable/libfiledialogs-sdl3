@@ -54,8 +54,6 @@
 #include <sys/stat.h>
 #if defined(_WIN32)
 #include <windows.h>
-#define STR_SLASH "\\"
-#define CHR_SLASH '\\'
 #define HOME_PATH "USERPROFILE"
 #else
 #if (defined(__APPLE__) && defined(__MACH__))
@@ -64,8 +62,6 @@
 #include <X11/Xlib.h>
 #endif
 #include <unistd.h>
-#define STR_SLASH "/"
-#define CHR_SLASH '/'
 #define HOME_PATH "HOME"
 #endif
 #define DIGITS_MIN -999999999999999
@@ -495,7 +491,6 @@ namespace {
       } else if (ifd::FileDialog::Instance().IsDone("GetDirectory")) {
         if (ifd::FileDialog::Instance().HasResult()) {
           result = ifd::FileDialog::Instance().GetResult().string();
-          if (!result.empty() && result.back() != CHR_SLASH) result.push_back(CHR_SLASH);
         }
         ifd::FileDialog::Instance().Close();
         goto finish;
