@@ -8,12 +8,9 @@ if [ `uname` = "Darwin" ]; then
   cp -fr "/opt/local/lib/libSDL3.dylib" "./libSDL3.dylib"
   install_name_tool -id @loader_path/libSDL3.dylib ./libSDL3.dylib
   install_name_tool -change /opt/local/lib/libSDL3.0.dylib @loader_path/libSDL3.dylib ./filedialogs
-  cp -fr "/opt/local/lib/libiconv.dylib" "./libiconv.dylib"
-  install_name_tool -id @loader_path/libiconv.2.dylib ./libiconv.dylib
-  install_name_tool -change /opt/local/lib/libiconv.2.dylib @loader_path/libiconv.dylib ./filedialogs
+  install_name_tool -change /opt/local/lib/libiconv.2.dylib /usr/lib/libiconv.2.dylib ./filedialogs
   cp -fr "./filedialogs" "../filedialogs.app/Contents/MacOS/filedialogs";
   cp -fr "./libSDL3.dylib" "../filedialogs.app/Contents/MacOS/libSDL3.dylib"
-  cp -fr "./libiconv.dylib" "../filedialogs.app/Contents/MacOS/libiconv.dylib"
 elif [ $(uname) = "Linux" ]; then
   cd "lunasvg";
   rm -f "CMakeCache.txt";
@@ -79,9 +76,7 @@ if [ `uname` = "Darwin" ]; then
   cp -fr "/opt/local/lib/libSDL3.dylib" "./libSDL3.dylib"
   install_name_tool -id @loader_path/libSDL3.dylib ./libSDL3.dylib
   install_name_tool -change /opt/local/lib/libSDL3.0.dylib @loader_path/libSDL3.dylib ./libfiledialogs.dylib
-  cp -fr "/opt/local/lib/libiconv.dylib" "./libiconv.dylib"
-  install_name_tool -id @loader_path/libiconv.2.dylib ./libiconv.dylib
-  install_name_tool -change /opt/local/lib/libiconv.2.dylib @loader_path/libiconv.dylib ./libfiledialogs.dylib
+  install_name_tool -change /opt/local/lib/libiconv.2.dylib /usr/lib/libiconv.2.dylib ./libfiledialogs.dylib
 elif [ $(uname) = "Linux" ]; then
   cd "lunasvg";
   rm -f "CMakeCache.txt";
